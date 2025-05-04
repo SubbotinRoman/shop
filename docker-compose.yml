@@ -1,0 +1,58 @@
+
+
+services:
+  # Сервис PHP (наше Laravel приложение)
+  app:
+    build: # Указываем, что образ нужно собрать из Dockerfile
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: shop-app # Имя контейнера
+    working_dir: /var/www/html # Рабочая директория внутри контейнера
+    volumes: # Связываем папки между твоей машиной и контейнером
+      - ./:/var/www/html # Папка проекта на твоей машине -> /var/www/html в контейнере
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini # Файл настроек PHP
+    depends_on: # Зависит от сервиса db (запустится после него)
+      - db
+    networks: # Подключаем к сети shop-network
+      - shop-network
+
+  # Сервис Веб-сервера (Nginx)
+  web:
+    image: nginx:alpine # Используем готовый образ Nginx
+    container_name: shop-web # Имя контейнера
+    ports: # Пробрасываем порт 80 из контейнера на порт 80 твоей машины
+      - "80:80"
+    volumes:
+      - ./:/var/www/html # Папка проекта
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf # Конфигурация Nginx
+    depends_on:
+      - app # Зависит от сервиса app
+    networks:
+      - shop-network
+
+  # Сервис Базы Данных (MySQL)
+  db:
+    image: mysql:8.0 # Используем готовый образ MySQL 8.0
+    container_name: shop-db # Имя контейнера
+    restart: unless-stopped # Перезапускать контейнер, если он остановился
+    environment: # Переменные окружения для MySQL
+      MYSQL_DATABASE: ${DB_DATABASE:-shop} # Имя базы данных (по умолчанию shop)
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret} # Пароль root (по умолчанию secret)
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret} # Пароль пользователя (по умолчанию secret)
+      MYSQL_USER: ${DB_USERNAME:-user} # Имя пользователя (по умолчанию user)
+    ports: # Пробрасываем порт 3306 MySQL наружу (для подключения извне, если нужно)
+      - "3307:3306" # Порт 3307 на твоей машине -> 3306 в контейнере (3306 может быть занят)
+    volumes:
+      - db-data:/var/lib/mysql # Сохраняем данные MySQL даже после остановки контейнера
+    networks:
+      - shop-network
+
+# Определяем сети
+networks:
+  shop-network:
+    driver: bridge # Стандартный тип сети для Docker
+
+# Определяем тома (для сохранения данных)
+volumes:
+  db-data:
+    driver: local # Стандартный драйвер для томов
