@@ -40,6 +40,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret} # Пароль root (по умолчанию secret)
       MYSQL_PASSWORD: ${DB_PASSWORD:-secret} # Пароль пользователя (по умолчанию secret)
       MYSQL_USER: ${DB_USERNAME:-user} # Имя пользователя (по умолчанию user)
+      MYSQL_CHARSET: ${DB_CHARSET:-utf8mb4} # Кодировка (по умолчанию utf8mb4)
+      MYSQL_COLLATION: ${DB_COLLATION:-utf8mb4_unicode_ci} # Сортировка (по умолчанию utf8mb4_unicode_ci)
     ports: # Пробрасываем порт 3306 MySQL наружу (для подключения извне, если нужно)
       - "3307:3306" # Порт 3307 на твоей машине -> 3306 в контейнере (3306 может быть занят)
     volumes:
