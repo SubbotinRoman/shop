@@ -27,7 +27,6 @@ class Product extends Model
 
     /**
      * Отношение "один к одному": цена товара.
-     * Предполагаем, что у одного товара одна текущая цена в таблице prices.
      * @return HasOne
      */
     public function price(): HasOne
@@ -47,7 +46,7 @@ class Product extends Model
         if ($this->group) {
             return $this->group->getBreadcrumbs();
         }
-        // Возвращаем пустую коллекцию, если группы нет (хотя по ТЗ должна быть)
+        // Возвращаем пустую коллекцию, если группы нет
         return collect();
     }
 }

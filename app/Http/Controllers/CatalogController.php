@@ -20,13 +20,11 @@ class CatalogController extends Controller
         $rootGroups = Group::where('id_parent', 0)->get();
 
         // 2. Загружаем количество товаров для каждой корневой группы
-        //    Это может быть не очень эффективно, если групп много.
-        //    В реальном проекте можно оптимизировать (кеширование, денормализация).
         foreach ($rootGroups as $group) {
             $group->total_products_count = $group->getTotalProductCount();
         }
 
-        // 3. Получаем все товары с их ценами (используем жадную загрузку 'price')
+        // 3. Получаем все товары с их ценами
         $productsQuery = Product::with('price'); // Начинаем строить запрос
 
         // 4. Применяем сортировку
@@ -34,7 +32,7 @@ class CatalogController extends Controller
         $sortDir = $request->input('sort_dir', 'asc'); // По умолчанию по возрастанию
 
         if ($sortBy == 'price' && $sortDir == 'asc') {
-            // Сортировка по цене (возрастание): JOIN с prices и сортировка по price
+            // Сортировка по цене (возрастание)
             $productsQuery->join('prices', 'products.id', '=', 'prices.id_product')
                 ->orderBy('prices.price', 'asc')
                 ->select('products.*'); // Важно выбрать поля products, чтобы избежать конфликтов имен id
@@ -87,7 +85,7 @@ class CatalogController extends Controller
         // 4. Получаем товары, принадлежащие этим группам, с их ценами
         $productsQuery = Product::whereIn('id_group', $groupIds)->with('price');
 
-        // 5. Применяем сортировку (логика та же, что и в index)
+        // 5. Применяем сортировку 
         $sortBy = $request->input('sort_by', 'name');
         $sortDir = $request->input('sort_dir', 'asc');
 

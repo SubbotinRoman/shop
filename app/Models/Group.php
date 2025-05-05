@@ -6,21 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Collection; // Добавь этот use
+use Illuminate\Support\Collection; 
 
 class Group extends Model
 {
     use HasFactory;
 
-    // Указываем имя таблицы, если оно отличается от стандартного Laravel (мн. число от имени модели)
+    // Указываем имя таблицы
     protected $table = 'groups';
 
     // Отключаем автоматическое управление временными метками created_at и updated_at,
     // так как их нет в нашей таблице
     public $timestamps = false;
-
-    // Указываем поля, которые можно массово заполнять (если будем использовать create/update)
-    // protected $fillable = ['id_parent', 'name']; // Пока не обязательно для чтения
 
     /**
      * Отношение "один ко многим" (обратное): родительская группа.
@@ -72,7 +69,6 @@ class Group extends Model
 
     /**
      * Получить общее количество товаров в этой группе и всех ее подгруппах.
-     * Использует getAllChildrenIds для эффективности.
      * @return int
      */
     public function getTotalProductCount(): int

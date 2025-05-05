@@ -8,8 +8,8 @@ services:
       dockerfile: Dockerfile
     container_name: shop-app # Имя контейнера
     working_dir: /var/www/html # Рабочая директория внутри контейнера
-    volumes: # Связываем папки между твоей машиной и контейнером
-      - ./:/var/www/html # Папка проекта на твоей машине -> /var/www/html в контейнере
+    volumes: # Связываем папки между своим компьютером и контейнером
+      - ./:/var/www/html # Папка проекта на компьютере -> /var/www/html в контейнере
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini # Файл настроек PHP
     depends_on: # Зависит от сервиса db (запустится после него)
       - db
@@ -43,7 +43,7 @@ services:
       MYSQL_CHARSET: ${DB_CHARSET:-utf8mb4} # Кодировка (по умолчанию utf8mb4)
       MYSQL_COLLATION: ${DB_COLLATION:-utf8mb4_unicode_ci} # Сортировка (по умолчанию utf8mb4_unicode_ci)
     ports: # Пробрасываем порт 3306 MySQL наружу (для подключения извне, если нужно)
-      - "3307:3306" # Порт 3307 на твоей машине -> 3306 в контейнере (3306 может быть занят)
+      - "3307:3306" # Порт 3307 на компьютере -> 3306 в контейнере (3306 может быть занят)
     volumes:
       - db-data:/var/lib/mysql # Сохраняем данные MySQL даже после остановки контейнера
     networks:
